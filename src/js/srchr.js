@@ -1,4 +1,19 @@
 var srchr = {
+  tools: [
+    {
+      name: 'web',
+      table: 'search.web',
+      where: "query='#{query}'"
+    }, {
+      name: 'flickr',
+      table: 'flickr.photos.search',
+      where: "text='#{query}' and has_geo='true'"
+    }, {
+      name: 'upcoming',
+      table: 'upcoming.events',
+      where: "tags='#{query}'"
+    }
+  ],
   srchs: [],
   updateSearchTerms: function() {
     var terms = $("#search_terms");
@@ -12,11 +27,23 @@ var srchr = {
     );
   },
   updateSearchResults: function(results) {
-    if ('web' in results) {
-      var web_results = $("#web_results");
+    for (var method in results){
+      if (results[method]) this.results_functions[method](results);
+    }
+  },
+  results_functions: {
+    'web': function(results) {
+      var section = $("#web_results");
+      var web_results = $("#web_results ul");
+
+      var webs = results['web'].result;
+      if (!(webs instanceof Array)) {
+	webs = [webs];
+      }
+
       web_results.empty();
       web_results.append(
-	$.map(results['web'],
+	$.map(webs,
 	      function(i) {
 		return '<li>'
 		  + '<a href="'+i.url+'">'+i.title+'</a>'
@@ -25,13 +52,20 @@ var srchr = {
 	      }
 	     ).join("")
       );
-    }
+      section.css({display:"block"});
+    },
+    'flickr': function(results) {
+      var section = $("#flickr_results");
+      var flickr_results = $("#flickr_results ul");
 
-    if ('flickr' in results) {
-      var flickr_results = $("#flickr_results");
+      var photos = results['flickr'].photo;
+      if (!(photos instanceof Array)) {
+	photos = [photos];
+      }
+
       flickr_results.empty();
       flickr_results.append(
-	$.map(results['flickr'],
+	$.map(photos,
 	      function(i) {
 		return '<li>'
 		  + '<a href="http://www.flickr.com/photos/'+i.owner+'/'+i.id+'/">'
@@ -41,6 +75,31 @@ var srchr = {
 	      }
 	     ).join("")
       );
+      section.css({display:"block"});
+    },
+    'upcoming': function(results) {
+      var section = $("#upcoming_results");
+      var upcoming_results = $("#upcoming_results ul");
+
+      var events = results['upcoming'].event;
+      if (!(events instanceof Array)) {
+	events = [events];
+      }
+
+      upcoming_results.empty();
+      upcoming_results.append(
+	$.map(events,
+	      function(i) {
+		return '<li>'
+		  + '<img src="'+i.photo_url+'" alt="'+i.venue_name+'" />'
+		  + '<h4><a href="'+i.url+'"'+i.title+'</h4>'
+		  + '<span>'+i.start_date+'</span>'
+		  + '<a href="'+i.ticket_url+'">Rock A Ticket</a>'
+		  + '</li>';
+	      }
+	     ).join("")
+      );
+      section.css({display:"block"});
     }
   }
 };
@@ -52,39 +111,26 @@ $(document).ready(
 	var query = $("#search").val();
 	srchr.srchs.unshift(query);
 
-	$.yql(
-	  "SELECT * FROM search.web WHERE query='#{query}'",
-	  {
-	    query: query
-	  },
-	  function (data) {
-	    console.log(data);
-	    if (!(data.error)) {
-	      srchr.updateSearchResults(
-		{
-		  'web': data.query.results.result
-		}
+	$.each(srchr.tools,
+	       function(idx, tool) {
+		 var section = $("#"+tool.name+"_results");
+		 section.css({display:'none'});
+		 $.yql(
+		   "SELECT * FROM "+tool.table+" WHERE "+tool.where,
+		   {
+		     query: query
+		   },
+		   function (data) {
+		     console.log(data);
+		     if (!(data.error)) {
+		       var results = {};
+		       results[tool.name] = data.query.results;
+		       srchr.updateSearchResults(results);
+		     }
+		   }
+		 );
+	       }
 	      );
-	    }
-	  }
-	);
-
-	$.yql(
-	  "SELECT * FROM flickr.photos.search WHERE text='#{query}' and has_geo='true'",
-	  {
-	    query: query
-	  },
-	  function (data) {
-	    console.log(data);
-	    if (!(data.error)) {
-	      srchr.updateSearchResults(
-		{
-		  'flickr': data.query.results.photo
-		}
-	      );
-	    }
-	  }
-	);
 
 	srchr.updateSearchTerms();
       }
