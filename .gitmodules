@@ -1,0 +1,3 @@
+[submodule "src/js/jquery-yql"]
+	path = src/js/jquery-yql
+	url = http://github.com/ncb000gt/jquery-yql.git
