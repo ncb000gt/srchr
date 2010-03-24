@@ -1,2 +1,12 @@
-fieldset{border:none;}
+fieldset,header h1{border:none;float:left;}
+h1,h2,h3,h4,h5,h6{margin:0;padding:0;}
 #search_results section{display:none;}
+header {overflow:hidden;}
+#search_terms,#search_results{border:1px solid #ffaa33;min-height:400px;padding:5px;}
+#search_terms{float:left;margin-right:10px;width:10%;}
+#search_results{overflow:hidden;}
+#web_results{float:left;width:80%}
+.side_dishes{float:right;width:18%}
+#upcoming_results,#flickr_results{padding:10px;}
+#flickr_results ul{margin:0;padding:0;}
+#flickr_results li{display:inline;padding:0 3px 0;margin:0;}

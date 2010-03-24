@@ -7,16 +7,16 @@ var srchr = {
     }, {
       name: 'flickr',
       table: 'flickr.photos.search',
-      where: "text='#{query}' and has_geo='true'"
+      where: "text='#{query}' AND has_geo='true'"
     }, {
       name: 'upcoming',
       table: 'upcoming.events',
-      where: "tags='#{query}'"
+      where: "tags='#{query}' OR description LIKE '%#{query}%' OR name LIKE '%#{query}%'"
     }
   ],
   srchs: [],
   updateSearchTerms: function() {
-    var terms = $("#search_terms");
+    var terms = $("#search_terms ul");
     terms.empty();
     terms.append(
       srchr.srchs.map(
@@ -76,6 +76,7 @@ var srchr = {
 	     ).join("")
       );
       section.css({display:"block"});
+      $('.side_dishes').css({display:'block'});
     },
     'upcoming': function(results) {
       var section = $("#upcoming_results");
@@ -100,6 +101,7 @@ var srchr = {
 	     ).join("")
       );
       section.css({display:"block"});
+      $('.side_dishes').css({display:'block'});
     }
   }
 };
@@ -110,10 +112,18 @@ $(document).ready(
       function() {
 	var query = $("#search").val();
 	srchr.srchs.unshift(query);
-
+	var selected_tools = [];
+	$(".controls input").each(
+	  function(idx) {
+	    if ($(this).attr('checked')) {
+	      selected_tools.push($(this).attr('name'));
+	    }
+	  }
+	);
 	$.each(srchr.tools,
 	       function(idx, tool) {
 		 var section = $("#"+tool.name+"_results");
+		 console.log("SELECT * FROM "+tool.table+" WHERE "+tool.where);
 		 section.css({display:'none'});
 		 $.yql(
 		   "SELECT * FROM "+tool.table+" WHERE "+tool.where,

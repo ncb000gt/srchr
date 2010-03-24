@@ -13,44 +13,49 @@
 			<input type="submit" id="search_submit" />
 		</fieldset>
 		
-		<fieldset>
+		<fieldset class="controls">
 			<ul>
 				<li>
-					<input type="checkbox" name="flickr" value="1" />
+					<input type="checkbox" name="flickr" value="1" checked="checked" />
 					<label for="flickr">Flickr</label>
 				</li>
 				<li>
-					<input type="checkbox" name="yahoo" value="1" />
+					<input type="checkbox" name="yahoo" value="1" checked="checked" />
 					<label for="flickr">Yahoo! Search</label>
 				</li>
 				<li>
-					<input type="checkbox" name="upcoming" value="1" />
+					<input type="checkbox" name="upcoming" value="1" checked="checked" />
 					<label for="flickr">Upcoming</label>
 				</li>
 			</ul>
 		</fieldset>
 	</header>
 	
-	<ul id="search_terms">
-	</ul>
+	<section id="search_terms">
+	  <h3>Search Terms</h3>
+	  <ul>
+	  </ul>
+	</section>
 	
-	<div id="search_results">
+	<section id="search_results">
 	  <section id="web_results">
 	    <h3>Web Results</h3>
 	    <ul>
 	    </ul>
 	  </section>
-	  <section id="upcoming_results">
-	    <h3>Upcoming Events</h3>
-	    <ul>
-	    </ul>
+	  <section class="side_dishes">
+	    <div id="upcoming_results">
+	      <h3>Upcoming Events</h3>
+	      <ul>
+	      </ul>
+	    </div>
+	    <div id="flickr_results">
+	      <h3>Flickr Images</h3>
+	      <ul>
+	      </ul>
+	    </div>
 	  </section>
-	  <section id="flickr_results">
-	    <h3>Flickr Images</h3>
-	    <ul>
-	    </ul>
-	  </section>
-	</div>
+	</section>
 	
 	<!-- use google-hosted javascript library of your choice -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
