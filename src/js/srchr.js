@@ -2,16 +2,16 @@ var srchr = {
   tools: [
     {
       name: 'web',
-      table: 'search.web',
-      where: "query='#{query}'"
+      table: 'search.web(10)',
+      where: 'query="#{query}"'
     }, {
       name: 'flickr',
-      table: 'flickr.photos.search',
-      where: "text='#{query}' AND has_geo='true'"
+      table: 'flickr.photos.search(10)',
+      where: 'text="#{query}" AND has_geo="true"'
     }, {
       name: 'upcoming',
-      table: 'upcoming.events',
-      where: "tags='#{query}' OR description LIKE '%#{query}%' OR name LIKE '%#{query}%'"
+      table: 'upcoming.events(5)',
+      where: 'tags="#{query}" or description LIKE "%#{query}%" OR name LIKE "%#{query}%"'
     }
   ],
   srchs: [],
@@ -108,42 +108,50 @@ var srchr = {
 
 $(document).ready(
   function() {
-    $("#search_submit").click(
-      function() {
-	var query = $("#search").val();
-	srchr.srchs.unshift(query);
-	var selected_tools = [];
-	$(".controls input").each(
-	  function(idx) {
-	    if ($(this).attr('checked')) {
-	      selected_tools.push($(this).attr('name'));
-	    }
-	  }
-	);
-	$.each(srchr.tools,
-	       function(idx, tool) {
-		 var section = $("#"+tool.name+"_results");
-		 console.log("SELECT * FROM "+tool.table+" WHERE "+tool.where);
-		 section.css({display:'none'});
-		 $.yql(
-		   "SELECT * FROM "+tool.table+" WHERE "+tool.where,
-		   {
-		     query: query
-		   },
-		   function (data) {
-		     console.log(data);
-		     if (!(data.error)) {
-		       var results = {};
-		       results[tool.name] = data.query.results;
-		       srchr.updateSearchResults(results);
-		     }
-		   }
-		 );
-	       }
-	      );
-
-	srchr.updateSearchTerms();
+    $("#search_submit").click(submit_query);
+    $("#search").keypress(
+      function(event) {
+	if (event.keyCode == '13') {
+	  event.preventDefault();
+	  submit_query();
+	}
       }
     );
   }
 );
+
+function submit_query() {
+  var query = $("#search").val();
+  srchr.srchs.unshift(query);
+  var selected_tools = [];
+  $(".controls input").each(
+    function(idx) {
+      if ($(this).attr('checked')) {
+	selected_tools.push($(this).attr('name'));
+      }
+    }
+  );
+  $.each(srchr.tools,
+	 function(idx, tool) {
+	   var section = $("#"+tool.name+"_results");
+	   console.log("SELECT * FROM "+tool.table+" WHERE "+tool.where);
+	   section.css({display:'none'});
+	   $.yql(
+	     "SELECT * FROM "+tool.table+" WHERE "+tool.where,
+	     {
+	       query: query
+	     },
+	     function (data) {
+	       console.log(data);
+	       if (!(data.error)) {
+		 var results = {};
+		 results[tool.name] = data.query.results;
+		 srchr.updateSearchResults(results);
+	       }
+	     }
+	   );
+	 }
+	);
+
+  srchr.updateSearchTerms();
+}
