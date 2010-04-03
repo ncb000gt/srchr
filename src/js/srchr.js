@@ -1,7 +1,7 @@
 var srchr = {
   tools: [
     {
-      name: 'web',
+      name: 'yahoo',
       table: 'search.web(10)',
       where: 'query="#{query}"'
     }, {
@@ -18,13 +18,63 @@ var srchr = {
   updateSearchTerms: function() {
     var terms = $("#search_terms ul");
     terms.empty();
-    terms.append(
-      srchr.srchs.map(
-	function(i) {
-	  return '<li><a href="#">'+i+"</a></li>";
+    $.each(
+      srchr.srchs,
+      function(idx, i) {
+	var services = [];
+	if (i.flickr) {
+	  services.push('f');
 	}
-      ).join("")
+	if (i.yahoo) {
+	  services.push('y');
+	}
+	if (i.upcoming) {
+	  services.push('u');
+	}
+	var el = $('<li><a href="#">'+i.term+'</a> ('
+		   + services.join(',')
+		   +') <a href="#" class="remove">x<a/></li>');
+	el.find('a:first').click(srchr.reloadSearch);
+	el.find('a.remove').click(srchr.removeTerm);
+	el.appendTo(terms);
+      }
     );
+  },
+  reloadSearch: function(ev) {
+    ev.preventDefault();
+    var el = $(ev.currentTarget);
+    var term = el.find('a:first').text();
+    $.each(
+      srchr.srchs,
+      function(idx, i) {
+	if (i.term == term) {
+	  $('input#search').val(term);
+	  $('.controls input').removeAttr('checked');
+	  for (var s in i) {
+	    var service = $('input#'+s);
+	    if (service){
+	      service.attr('checked','checked');
+	    }
+	  }
+	}
+      }
+    );
+    submit_query();
+  },
+  removeTerm: function(ev) {
+    ev.preventDefault();
+    var el = $(ev.currentTarget).parent();
+    var term = el.find('a:first').text();
+    $.each(
+      srchr.srchs,
+      function(idx, i) {
+	if (i.term == term) {
+	  srchr.srchs = srchr.srchs.splice(0,idx).concat(srchr.srchs.splice(idx+1, srchr.srchs.length));
+	  return;
+	}
+      }
+    );
+    srchr.updateSearchTerms();
   },
   updateSearchResults: function(results) {
     for (var method in results){
@@ -32,11 +82,11 @@ var srchr = {
     }
   },
   results_functions: {
-    'web': function(results) {
+    'yahoo': function(results) {
       var section = $("#web_results");
       var web_results = $("#web_results ul");
 
-      var webs = results['web'].result;
+      var webs = results['yahoo'].result;
       if (!(webs instanceof Array)) {
 	webs = [webs];
       }
@@ -117,24 +167,44 @@ $(document).ready(
 	}
       }
     );
+
+    $('a.advanced').click(
+      function(ev) {
+	ev.preventDefault();
+	var controls = $('.controls');
+	if (controls.hasClass('hide')) {
+	  controls.slideDown('slow');
+	  controls.toggleClass('hide',false);
+	  controls.toggleClass('show',true);
+	} else {
+	  controls.slideUp('slow');
+	  controls.toggleClass('hide',true);
+	  controls.toggleClass('show',false);
+	}
+      }
+    );
   }
 );
 
 function submit_query() {
   var query = $("#search").val();
-  srchr.srchs.unshift(query);
+  var term = {
+    term: query
+  };
   var selected_tools = [];
   $(".controls input").each(
-    function(idx) {
-      if ($(this).attr('checked')) {
-	selected_tools.push($(this).attr('name'));
+    function(idx, item) {
+      if ($(item).attr('checked')) {
+	var service = $(item).attr('name');
+	selected_tools.push(service);
+	term[service] = true;
       }
     }
   );
+  srchr.srchs.unshift(term);
   $.each(srchr.tools,
 	 function(idx, tool) {
 	   var section = $("#"+tool.name+"_results");
-	   console.log("SELECT * FROM "+tool.table+" WHERE "+tool.where);
 	   section.css({display:'none'});
 	   $.yql(
 	     "SELECT * FROM "+tool.table+" WHERE "+tool.where,
@@ -142,7 +212,6 @@ function submit_query() {
 	       query: query
 	     },
 	     function (data) {
-	       console.log(data);
 	       if (!(data.error)) {
 		 var results = {};
 		 results[tool.name] = data.query.results;
