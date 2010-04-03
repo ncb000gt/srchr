@@ -1,66 +1,70 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>srchr</title>
-	<link rel="stylesheet" href="css/styles.css" type="text/css" media="screen" charset="utf-8" />
-</head>
-<body>
-	<header>
-		<h1>srchr</h1>
-		<fieldset>
-			<input type="search" name="search" id="search" />
-			<input type="submit" id="search_submit" />
-		</fieldset>
-		
-		<fieldset class="controls">
-			<ul>
-				<li>
-					<input type="checkbox" name="flickr" value="1" checked="checked" />
-					<label for="flickr">Flickr</label>
-				</li>
-				<li>
-					<input type="checkbox" name="yahoo" value="1" checked="checked" />
-					<label for="flickr">Yahoo! Search</label>
-				</li>
-				<li>
-					<input type="checkbox" name="upcoming" value="1" checked="checked" />
-					<label for="flickr">Upcoming</label>
-				</li>
-			</ul>
-		</fieldset>
-	</header>
-	
-	<section id="search_terms">
-	  <h3>Search Terms</h3>
+  <head>
+    <meta charset="utf-8">
+    <title>srchr</title>
+    <link rel="stylesheet" href="css/styles.css" type="text/css" media="screen" charset="utf-8" />
+  </head>
+  <body>
+    <header>
+      <h1><img src="images/srchr.logo.png" title="srchr" alt="srchr" /></h1>
+      <section class="search_section">
+	<fieldset class="search">
+	  <input type="search" name="search" id="search" />
+	  <input type="submit" id="search_submit" />
+	</fieldset>
+	<div class="control_section">
+	  <a href="#" class="advanced">Advanced</a>
+	  <fieldset class="controls">
+	    <ul>
+	      <li>
+		<input type="checkbox" name="flickr" value="1" checked="checked" />
+		<label for="flickr">Flickr</label>
+	      </li>
+	      <li>
+		<input type="checkbox" name="yahoo" value="1" checked="checked" />
+		<label for="flickr">Yahoo! Search</label>
+	      </li>
+	      <li>
+		<input type="checkbox" name="upcoming" value="1" checked="checked" />
+		<label for="flickr">Upcoming</label>
+	      </li>
+	    </ul>
+	  </fieldset>
+	</div>
+      </section>
+    </header>
+    
+    <section id="search_terms">
+      <h3>Search Terms</h3>
+      <ul>
+      </ul>
+    </section>
+    
+    <section id="search_results">
+      <section id="web_results">
+	<h3>Web Results</h3>
+	<ul>
+	</ul>
+      </section>
+      <section class="side_dishes">
+	<div id="upcoming_results">
+	  <h3>Upcoming Events</h3>
 	  <ul>
 	  </ul>
-	</section>
-	
-	<section id="search_results">
-	  <section id="web_results">
-	    <h3>Web Results</h3>
-	    <ul>
-	    </ul>
-	  </section>
-	  <section class="side_dishes">
-	    <div id="upcoming_results">
-	      <h3>Upcoming Events</h3>
-	      <ul>
-	      </ul>
-	    </div>
-	    <div id="flickr_results">
-	      <h3>Flickr Images</h3>
-	      <ul>
-	      </ul>
-	    </div>
-	  </section>
-	</section>
-	
-	<!-- use google-hosted javascript library of your choice -->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	<script src="js/jquery-yql/jquery.yql.js"></script>
-	<script src="js/jquery-yql/srchr.abstractions.js"></script>
-	<script src="js/srchr.js"></script>
-</body>
+	</div>
+	<div id="flickr_results">
+	  <h3>Flickr Images</h3>
+	  <ul>
+	  </ul>
+	</div>
+      </section>
+    </section>
+    
+    <!-- use google-hosted javascript library of your choice -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="js/jquery-yql/jquery.yql.js"></script>
+    <script src="js/jquery-yql/srchr.abstractions.js"></script>
+    <script src="js/srchr.js"></script>
+  </body>
 </html>

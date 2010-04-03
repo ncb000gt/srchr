@@ -21,7 +21,7 @@ var srchr = {
     terms.append(
       srchr.srchs.map(
 	function(i) {
-	  return "<li>"+i+"</li>";
+	  return '<li><a href="#">'+i+"</a></li>";
 	}
       ).join("")
     );
